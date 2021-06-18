@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 const Login = () => {
-  // make a post request to retrieve a token from the api
-  // when you have handled the token, navigate to the BubblePage route
-
+  //state, hooks, error message
   const [loginInfo, setLoginInfo] = useState({
     username: "",
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("Username or Password not valid.");
 
+  const history = useHistory();
+
   const error = () => {
     if (loginInfo.username === "" || loginInfo.password === "") {
       return errorMessage;
     }
   };
-  //replace with error state
 
+  //handle Change function
   const handleChange = (e) => {
     setLoginInfo({
       ...loginInfo,
@@ -26,12 +27,15 @@ const Login = () => {
   };
   console.log("this is handleChange state", loginInfo);
 
+  //login function
   const handleLogin = (e) => {
     e.preventDefault();
     axios
       .post("http://localhost:5000/api/login", loginInfo)
       .then((res) => {
+        console.log(res);
         localStorage.setItem("token", res.data.payload);
+        history.push("/bubble-page");
       })
       .catch((err) => {
         console.log(err);
@@ -46,14 +50,14 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <label>
             Username
-            <input data-testid="username" type="text" name="username" value={loginInfo.username} onChange={handleChange} />
+            <input id="username" data-testid="username" type="text" name="username" value={loginInfo.username} onChange={handleChange} />
           </label>
           <label>
             Password
-            <input data-testid="password" type="text" name="password" value={loginInfo.password} onChange={handleChange} />
+            <input id="password" data-testid="password" type="text" name="password" value={loginInfo.password} onChange={handleChange} />
           </label>
+          <button>Login</button>
         </form>
-        <button>Login</button>
       </div>
 
       <p data-testid="errorMessage" className="error">
